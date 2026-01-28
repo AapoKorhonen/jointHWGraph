@@ -66,20 +66,14 @@ jointHWGraph_GEM_algorithm <- function(iters, S, p, n,
       Phi_0 <- (deg-p-1)*L1
     }
     
-    
-    if (time_points > 2) {
-      for (k in 1:(time_points)) {
-        
-        
-        
-        L2 <- chol2inv( chol( (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]] ))
-        Omega10 <- (n[k] + nu[k] +p-1-p-1)*L2
-        
-        current_iter_omega[[k]] <- Omega10
-        
-        Omega10_prev <- Omega10
-      }
+    for (k in 1:(time_points)) {
       
+      L2 <- chol2inv( chol( (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]] ))
+      Omega10 <- (n[k] + nu[k] +p-1-p-1)*L2
+        
+      current_iter_omega[[k]] <- Omega10
+        
+      Omega10_prev <- Omega10
     }
     
     
