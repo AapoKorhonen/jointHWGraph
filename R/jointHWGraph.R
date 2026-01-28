@@ -5,7 +5,7 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
                              ,iters = 10000, n_networks = NULL, B= diag(p), n_permutations = 50,
                              stop_criterion = 10^(-5)
                              , inter=100,epsilon1 = 0.001
-                             , epsilon2 = 0.001,fixed_B = F, print_t = T, w=0.5,
+                             , epsilon2 = 0.001,fixed_B = T, print_t = T, w=0.5,
                              fixed_nu = T, fixed_delta = T, fixed_lambda = T, sd = 10,
                              gamma1 = 1,gamma2 = 1, burn_in=500, only_mean=F, print_int = 100){
   
