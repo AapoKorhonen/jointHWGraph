@@ -35,7 +35,7 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
   differences <- d - common
   
   com_network <- igraph::sample_gnm(n = p,m= (common+differences*number_of_groups) ,directed = FALSE)
-         
+  
   connections_S <- rep(0, (common+differences*number_of_groups))
   
   for(i in 1:(common+differences*number_of_groups)){
@@ -95,7 +95,7 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
     omega_list[[i]] <- omega
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = HMFGraph::mvrnorm_cpp(n[i], rep(0, p), sigma)
+    x = mvtnorm::mvrnorm(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 
