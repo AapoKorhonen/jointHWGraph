@@ -72,7 +72,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
   
   
   
-  return(adjacency_matrices)
+  return(list(adjacency_matrices=adjacency_matrices, tau = taus[F1s==max(F1s)][1])  )
 }
   
   
