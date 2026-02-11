@@ -95,7 +95,7 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
     omega_list[[i]] <- omega
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = mvtnorm::rmvnorm(n[i], rep(0, p), sigma)
+    x = MASS::mvrnorm(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 
