@@ -21,7 +21,7 @@ jointHWGraph_permutations <- function(result_object, data, n_permutations=50, EM
     seed <- sample(.Random.seed, 1)
   }
   
-  if(parallel_c = T){
+  if(parallel_c == T){
     n_clusters <- n_permutations
     cat("Starting permutations", "\n")
     cl <- parallel::makeCluster(min(n_cores, n_clusters), 
