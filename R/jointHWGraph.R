@@ -7,7 +7,8 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
                              , inter=100,epsilon1 = 0.001
                              , epsilon2 = 0.001,fixed_B = T, print_t = T, w=0.5,
                              fixed_nu = T, fixed_delta = T, fixed_lambda = T, sd = 10,
-                             gamma1 = 1,gamma2 = 1, burn_in=500, only_mean=F, print_int = 100,row_based=T, parallel_c = T){
+                             gamma1 = 1,gamma2 = 1, burn_in=500, only_mean=F,
+                             print_int = 100,row_based=T, parallel_c = T, group_based_threshold= F){
   
   if(is.null(time_points)){
     time_points = length(data_list)
@@ -26,7 +27,7 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
   }
   
   if(is.null(delta_list)){
-    delta_list <- rep(p*10,time_points)
+    delta_list <- rep(3,time_points)
   }
   else if (length(delta_list)==1){
     
@@ -47,9 +48,9 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
     S[[i]]  <- cov(data_list[[i]])
   }
   print(p)
+  print(nu_list)
   
-  
-  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, p=p,  n=n, 
+  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S,data_list=data_list, p=p,  n=n, 
                                                   nu= nu_list,delta = delta_list, epsilon1 = epsilon1, 
                                                   epsilon2 = epsilon2,fixed_B =fixed_B, 
                                                   print_t = print_t, time_points = time_points,
@@ -63,9 +64,9 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
   
   
   
-  permutation_results <- jointHWGraph_permutations(result_list,data_list, n_permutations= n_permutations,row_based=row_based, parallel_c = parallel_c)
+  permutation_results <- jointHWGraph_permutations(result_list,data_list, n_permutations= n_permutations,row_based=row_based, parallel_c = parallel_c, group_based_threshold= group_based_threshold)
   
-  edge_selection <- jointHWGraph_edge_selection(permutation_results, result_list, FDR=FDR, target_FDR = target_FDR
+  edge_selection <- jointHWGraph_edge_selection(permutation_results, result_list, FDR=FDR, target_FDR = target_FDR,group_based_threshold=group_based_threshold
                                          , expected_number_of_connections = expected_number_of_connections)
   
   return(list(omega_list=tvHMFGraph_result$omega, adjacency_matrices = edge_selection$adjacency_matrices, tau = edge_selection$tau ))

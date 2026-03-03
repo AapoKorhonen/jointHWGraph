@@ -1,8 +1,13 @@
 
-threhold_list <- function(taus,map_list,n_timepoints,rep_times){
+threhold_list <- function(taus,map_list,n_timepoints,rep_times,group_based_threshold=F){
   
   
-  n_con_tau_p <- c()
+  if(group_based_threshold == T){
+    n_con_tau_p <- matrix(0,ncol=length(taus), nrow=n_timepoints)
+  }
+  else{
+    n_con_tau_p <- c()
+  }
   
   for(i in 1:length(taus)){
     
@@ -28,8 +33,12 @@ threhold_list <- function(taus,map_list,n_timepoints,rep_times){
       
     }
     
-    
-    n_con_tau_p[i] <- mean(n_con_tim_p)
+    if(group_based_threshold == T){
+      n_con_tau_p[,i] <- (n_con_tim_p)
+    }
+    else{
+      n_con_tau_p[i] <- mean(n_con_tim_p)
+    }
     
   }
   

@@ -46,7 +46,7 @@ jointHWGraph_GEM <- function(data_list, delta_list = NULL, nu_list = NULL,  n=NU
   }
   print(p)
   
-  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, p=p,  n=n, 
+  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
                                                nu= nu_list,delta = delta_list, epsilon1 = epsilon1, 
                                                epsilon2 = epsilon2,fixed_B =fixed_B, 
                                                print_t = print_t, time_points = time_points,

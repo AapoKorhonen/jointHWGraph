@@ -1,11 +1,12 @@
 
-jointHWGraph_GEM_algorithm <- function(iters, S, p, n, 
+jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n, 
                                      delta, nu,
                                      epsilon1, epsilon2,
                                      fixed_B = FALSE, print_t = TRUE,
                                      time_points = 1, burn_in = 500, stop_criterion = 10^(-5),print_int =100) {
   
   
+  updated_data <- data_list
   
   probs <- numeric(0)
   nut <- list()
@@ -34,6 +35,20 @@ jointHWGraph_GEM_algorithm <- function(iters, S, p, n,
   current_iter_Phi   <- Phi_ini
   current_iter_Phi_B   <- Phi_ini
   
+  missing_groups <- c()
+  missing_vals <- list()
+  
+  
+  for(i in 1:time_points){
+    
+    missing_vals[[i]] <- which(is.na(rowSums(data_list[[i]])))
+    
+    if(length(missing_vals) >= 1 ){
+      missing <- T
+      missing_groups <- append(missing_groups, i)
+    }
+  }
+  
   for (i in seq_len(iters)) {
     
     
@@ -48,6 +63,24 @@ jointHWGraph_GEM_algorithm <- function(iters, S, p, n,
         rate <-  (delta[1] + p - 1)*(Phi_0[ii, ii] * 0.5) + epsilon2
         B_i[ii, ii] <- (shape-1)/rate
       }
+    }
+    
+    if(length(missing_groups) >= 1){
+      for(mi in missing_groups){
+        
+        for(mv in missing_vals[[mi]]){
+          
+          missing_variables <- which(is.na(data_list[[mi]][mv,]))
+          
+          updated_data[[mi]][mv,missing_variables] <- t(-1*solve(current_iter_omega[[mi]][ missing_variables, missing_variables])
+                                                 %*%current_iter_omega[[mi]][ missing_variables, -missing_variables]
+                                                 %*%data_list[[mi]][mv,-missing_variables])
+          
+        }
+        
+        S[[mi]] <- cov(updated_data[[mi]])
+      }
+      
     }
     
     L1 <- (nu[1] + p - 1)*current_iter_omega[[1]]
