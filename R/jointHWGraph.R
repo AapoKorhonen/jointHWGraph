@@ -27,7 +27,7 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
   }
   
   if(is.null(delta_list)){
-    delta_list <- rep(3,time_points)
+    delta_list <- rep(p,time_points)
   }
   else if (length(delta_list)==1){
     

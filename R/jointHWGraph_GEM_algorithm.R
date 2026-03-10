@@ -9,31 +9,21 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   updated_data <- data_list
   
   probs <- numeric(0)
-  nut <- list()
-  deltat <- list()
   Omega <- list()
-  Phi <- list()
   
-  Phi_ini <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   Omega_ini <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   
   Phi_0 <- diag(p)
   
-  last_iter_Phi <- Phi_ini
   last_iter_omega <- Omega_ini
   
   Omega[[1]] <- Omega_ini
-  Phi[[1]] <- Phi_ini
   
   shape <- 1
   rate <- 1
   kk <- time_points 
   
-  current_iter_nu <- numeric(0)
-  current_iter_delta <- numeric(0)
   current_iter_omega <- Omega_ini
-  current_iter_Phi   <- Phi_ini
-  current_iter_Phi_B   <- Phi_ini
   
   missing_groups <- c()
   missing_vals <- list()
@@ -51,10 +41,6 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   
   for (i in seq_len(iters)) {
     
-    
-    current_iter_nu <- numeric(0)
-    current_iter_delta <- numeric(0)
-    current_iter_lambda <- numeric(0)
     
     B_i <- diag(1, p, p)
     if (!fixed_B) {
@@ -110,10 +96,6 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     }
     
     
-    current_iter_nu[kk] <- nu[kk]
-    current_iter_delta[kk] <- delta[kk]
-    
-    
     if(i > 1){
       
       norms <- c()
@@ -126,9 +108,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       
       for(iv in 1:time_points){
         
-        #Phi[[iv]] <- current_iter_Phi[[iv]]
         Omega[[iv]] <- current_iter_omega[[iv]]
-        
         
       }
       
@@ -148,8 +128,6 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       }
     }
     for(iv in 1:time_points){
-      
-      #Phi[[iv]] <- current_iter_Phi[[iv]]
       
       Omega[[iv]] <- current_iter_omega[[iv]]
       

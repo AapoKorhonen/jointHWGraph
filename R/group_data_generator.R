@@ -73,6 +73,7 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
   }
   
   omega_list <- list()
+  sigma_list <- list()
   data_list <- list()
   adjacency_list <- list()
   
@@ -86,22 +87,23 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
     
     diag(omega) <- 0
     
-    diag(omega) = abs(min(eigen(omega)$values)) + 0.2
+    diag(omega) = abs(min(eigen(omega,symmetric=T,only.values=T)$values)) + 0.2
+    #diag(omega) = abs(RSpectra::eigs_sym(omega, which="SM", k=1, opts = list(maxitr = 10000))$values) + 0.2
     
-    sigma = cov2cor(solve(omega))
-    
-    omega = solve(sigma)
+    sigma = cov2cor(chol2inv(chol(omega)))
+    sigma_list[[i]] <- sigma
+    omega = chol2inv(chol(sigma))
     
     omega_list[[i]] <- omega
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = MASS::mvrnorm(n[i], rep(0, p), sigma)
+    x = HMFGraph::mvrnorm_cpp(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 
   }
   
   
-  return(list(data = data_list, precision_matrix = presicion_list, covariance_matrix = omega_list, adjacency_matrix=adjacency_list))
+  return(list(data = data_list, precision_matrix = omega_list, covariance_matrix = omega_list, adjacency_matrix=adjacency_list))
 }
 
