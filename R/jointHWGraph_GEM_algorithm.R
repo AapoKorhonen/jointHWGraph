@@ -11,19 +11,15 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   probs <- numeric(0)
   Omega <- list()
   
-  Omega_ini <- lapply(seq_len(time_points), function(i) diag(1, p, p))
-  
   Phi_0 <- diag(p)
   
-  last_iter_omega <- Omega_ini
-  
-  Omega[[1]] <- Omega_ini
+  Omega[[1]] <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   
   shape <- 1
   rate <- 1
   kk <- time_points 
   
-  current_iter_omega <- Omega_ini
+  current_iter_omega <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   
   missing_groups <- c()
   missing_vals <- list()
@@ -91,8 +87,6 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       Omega10 <- (n[k] + nu[k] +p-1-p-1)*L2
         
       current_iter_omega[[k]] <- Omega10
-        
-      Omega10_prev <- Omega10
     }
     
     
