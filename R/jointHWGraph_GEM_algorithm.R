@@ -8,12 +8,12 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   
   updated_data <- data_list
   
-  probs <- numeric(0)
-  Omega <- list()
+  #Omega <- list()
   
   Phi_0 <- diag(p)
+  norms <- c()
   
-  Omega[[1]] <- lapply(seq_len(time_points), function(i) diag(1, p, p))
+  #Omega[[1]] <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   
   shape <- 1
   rate <- 1
@@ -80,31 +80,25 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     else{
       Phi_0 <- (deg-p-1)*L1
     }
+    L1 <- NULL
+    if(p>=10000){
+      gc()
+    }
     
     for (k in 1:(time_points)) {
       
       L2 <- chol2inv( chol( (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]] ))
       Omega10 <- (n[k] + nu[k] +p-1-p-1)*L2
-        
+      norms[k] <- norm(current_iter_omega[[k]] - Omega10,type="F")
       current_iter_omega[[k]] <- Omega10
     }
-    
+    Omega10 <- NULL
+    L2 <- NULL
+    if(p>=10000){
+      gc()
+    }
     
     if(i > 1){
-      
-      norms <- c()
-      for(iv in 1:time_points){
-        
-        norms[iv] <- norm(Omega[[iv]] - current_iter_omega[[iv]],type="F")
-        
-      }
-      
-      
-      for(iv in 1:time_points){
-        
-        Omega[[iv]] <- current_iter_omega[[iv]]
-        
-      }
       
       if(print_t==T){
         if(i %% print_int == 0){
@@ -121,14 +115,9 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
         break
       }
     }
-    for(iv in 1:time_points){
-      
-      Omega[[iv]] <- current_iter_omega[[iv]]
-      
-    }
     
   }
   
   return(list(phi = Phi_0,
-              omega = Omega))
+              omega = current_iter_omega))
 }
