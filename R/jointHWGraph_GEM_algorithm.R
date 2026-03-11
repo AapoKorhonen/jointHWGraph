@@ -26,7 +26,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     
     missing_vals[[i]] <- which(is.na(rowSums(data_list[[i]])))
     
-    if(length(missing_vals) >= 1 ){
+    if(length(missing_vals[[i]]) >= 1 ){
       missing <- T
       missing_groups <- append(missing_groups, i)
     }
@@ -43,7 +43,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       }
     }
     
-    if(length(missing_groups) >= 1){
+    if(missing){
       for(mi in missing_groups){
         
         for(mv in missing_vals[[mi]]){
