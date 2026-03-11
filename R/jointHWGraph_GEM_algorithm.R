@@ -8,22 +8,19 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   
   updated_data <- data_list
   
-  #Omega <- list()
   
   Phi_0 <- diag(p)
+  Omega10 <- diag(p)
   norms <- c()
-  
-  #Omega[[1]] <- lapply(seq_len(time_points), function(i) diag(1, p, p))
-  
+  L1 <- diag(p)
   shape <- 1
   rate <- 1
   kk <- time_points 
-  
+  B_i <- diag(1, p, p)
   current_iter_omega <- lapply(seq_len(time_points), function(i) diag(1, p, p))
   
   missing_groups <- c()
   missing_vals <- list()
-  
   
   for(i in 1:time_points){
     
@@ -38,7 +35,6 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   for (i in seq_len(iters)) {
     
     
-    B_i <- diag(1, p, p)
     if (!fixed_B) {
       for (ii in 1:p) {
         shape <- (delta[1] + p - 1) * 0.5 + epsilon1
@@ -65,31 +61,39 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       
     }
     
-    L1 <- (nu[1] + p - 1)*current_iter_omega[[1]]
+    L1[] <- (nu[1] + p - 1)*current_iter_omega[[1]]
     deg <- nu[1] + p - 1
     for(lk in 2:time_points){
-      L1 <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
+      L1[] <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
       deg <- deg + nu[lk] + p - 1
     }
-    L1 <- chol2inv( chol(L1 + (delta[1] + p - 1)*B_i))
+    L1[] <- L1 + (delta[1] + p - 1)*B_i
+    L1[] <- chol(L1)
+    L1[] <- chol2inv(L1)
     deg <- deg + delta[1] + p - 1
     
     if (fixed_B == T) {
-      Phi_0 <- (deg)*L1
+      Phi_0[] <- (deg)*L1
     }
     else{
-      Phi_0 <- (deg-p-1)*L1
+      Phi_0[] <- (deg-p-1)*L1
     }
+    
     L1 <- NULL
-    if(p>=10000){
+    
+    if(p>=1000){
       gc()
     }
     
     for (k in 1:(time_points)) {
       
-      L2 <- chol2inv( chol( (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]] ))
-      Omega10 <- (n[k] + nu[k] +p-1-p-1)*L2
-      norms[k] <- norm(current_iter_omega[[k]] - Omega10,type="F")
+      L1[] <- (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]]
+      L1[] <- chol( L1 )
+      L1[] <- chol2inv( L1)
+      Omega10 <- (n[k] + nu[k] +p-1-p-1)*L1
+      diff <- current_iter_omega[[k]] - Omega10
+      norms[k] <-  sqrt(sum((current_iter_omega[[k]] - Omega10)^2))
+      #norms[k] <- norm(current_iter_omega[[k]] - Omega10,type="F")
       current_iter_omega[[k]] <- Omega10
     }
     Omega10 <- NULL
