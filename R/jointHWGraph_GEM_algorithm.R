@@ -61,15 +61,15 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       
     }
     
-    L1[] <- (nu[1] + p - 1)*current_iter_omega[[1]]
+    L1 <- (nu[1] + p - 1)*current_iter_omega[[1]]
     deg <- nu[1] + p - 1
     for(lk in 2:time_points){
-      L1[] <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
+      L1 <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
       deg <- deg + nu[lk] + p - 1
     }
-    L1[] <- L1 + (delta[1] + p - 1)*B_i
-    L1[] <- chol(L1)
-    L1[] <- chol2inv(L1)
+    L1 <- L1 + (delta[1] + p - 1)*B_i
+    L1 <- chol(L1)
+    L1 <- chol2inv(L1)
     deg <- deg + delta[1] + p - 1
     
     if (fixed_B == T) {
@@ -87,9 +87,9 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     
     for (k in 1:(time_points)) {
       
-      L1[] <- (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]]
-      L1[] <- chol( L1 )
-      L1[] <- chol2inv( L1)
+      L1 <- (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]]
+      L1 <- chol( L1 )
+      L1 <- chol2inv( L1)
       Omega10 <- (n[k] + nu[k] +p-1-p-1)*L1
       diff <- current_iter_omega[[k]] - Omega10
       norms[k] <-  sqrt(sum((current_iter_omega[[k]] - Omega10)^2))
@@ -97,7 +97,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
       current_iter_omega[[k]] <- Omega10
     }
     Omega10 <- NULL
-    L2 <- NULL
+    L1 <- NULL
     if(p>=10000){
       gc()
     }
