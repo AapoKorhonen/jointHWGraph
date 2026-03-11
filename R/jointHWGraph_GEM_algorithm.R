@@ -21,6 +21,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   
   missing_groups <- c()
   missing_vals <- list()
+  missing <- F
   
   for(i in 1:time_points){
     
