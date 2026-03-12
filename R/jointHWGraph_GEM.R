@@ -1,5 +1,5 @@
 
-jointHWGraph_GEM1 <- function(data_list, delta_list = NULL, nu_list = NULL,  n=NULL
+jointHWGraph_GEM <- function(data_list, delta_list = NULL, nu_list = NULL,  n=NULL
                             , p=NULL,time_points=NULL,iters = 10000, n_networks = NULL, B= diag(p) 
                             , stop_criterion = 10^(-5)
                             , inter=100,epsilon1 = 0.001
@@ -46,7 +46,7 @@ jointHWGraph_GEM1 <- function(data_list, delta_list = NULL, nu_list = NULL,  n=N
   }
   print(p)
   
-  tvHMFGraph_result <- jointHWGraph_GEM_algorithm1(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
+  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
                                                nu= nu_list,delta = delta_list, epsilon1 = epsilon1, 
                                                epsilon2 = epsilon2,fixed_B =fixed_B, 
                                                print_t = print_t, time_points = time_points,

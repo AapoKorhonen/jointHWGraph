@@ -1,5 +1,5 @@
 
-jointHWGraph_GEM_algorithm1 <- function(iters, S, data_list, p, n, 
+jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n, 
                                      delta, nu,
                                      epsilon1, epsilon2,
                                      fixed_B = FALSE, print_t = TRUE,
