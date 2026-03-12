@@ -1,5 +1,5 @@
 
-jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n, 
+jointHWGraph_GEM_algorithm1 <- function(iters, S, data_list, p, n, 
                                      delta, nu,
                                      epsilon1, epsilon2,
                                      fixed_B = FALSE, print_t = TRUE,
@@ -46,7 +46,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     
     if(missing){
       for(mi in missing_groups){
-        
+        print(mi)
         for(mv in missing_vals[[mi]]){
           
           missing_variables <- which(is.na(data_list[[mi]][mv,]))
@@ -57,7 +57,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
           
         }
         
-        S[[mi]] <- cov(updated_data[[mi]])
+        S[[mi]] <- sample_covariance_cal(updated_data[[mi]])
       }
       
     }

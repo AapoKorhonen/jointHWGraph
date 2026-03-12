@@ -45,7 +45,7 @@ jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_li
   
   S <- list()
   for(i in 1:time_points){
-    S[[i]]  <- cov(data_list[[i]])
+    S[[i]]  <- sample_covariance_cal(data_list[[i]])
   }
   print(p)
   print(nu_list)
