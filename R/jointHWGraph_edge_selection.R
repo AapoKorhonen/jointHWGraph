@@ -11,7 +11,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
   n_con <- permutations$connection_list
   
   if(group_based_threshold==T){
-    n_con_true <- matrix(0, nrow = results$time_points, ncol = length(taus))
+    n_con_true <- matrix(0, nrow = results$n_groups, ncol = length(taus))
   }
   else{
     n_con_true <- c()
@@ -22,7 +22,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
     thres <- taus[i]
     n_con_time_point  <- c()
     
-    for(k in 1:results$time_points){
+    for(k in 1:results$n_groups){
       adjacency_matrix <- part_cor_thres(cov2cor(results$omega_list[[k]]), thres = thres)
       
       diag(adjacency_matrix) <- 0
@@ -62,7 +62,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
   
   
   if(FDR == FALSE){
-    for(i in 1:results$time_points){
+    for(i in 1:results$n_groups){
       
       if(group_based_threshold==T){
         thres <-  taus[F1s[i,]==max(F1s[i,])][1]
@@ -77,7 +77,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
     
     if(group_based_threshold==T){
       tau <- c()
-      for(i in 1:results$time_points){
+      for(i in 1:results$n_groups){
         tau[i] <-  taus[F1s[i,]==max(F1s[i,])][1]
       }
     }
@@ -87,7 +87,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
     
   }
   else{
-    for(i in 1:results$time_points){
+    for(i in 1:results$n_groups){
       
       if(group_based_threshold==T){
         thres <-  taus[FDRs[i,]<=target_FDR][1]
@@ -103,7 +103,7 @@ jointHWGraph_edge_selection <- function(permutations, results, expected_number_o
     }
     if(group_based_threshold==T){
       tau <- c()
-      for(i in 1:results$time_points){
+      for(i in 1:results$n_groups){
         tau[i] <-  taus[FDRs[i,]<=target_FDR][1]
       }
     }

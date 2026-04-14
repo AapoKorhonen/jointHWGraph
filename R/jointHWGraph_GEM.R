@@ -1,14 +1,31 @@
-
-jointHWGraph_GEM <- function(data_list, delta_list = NULL, nu_list = NULL,  n=NULL
-                            , p=NULL,time_points=NULL,iters = 10000, n_networks = NULL, B= diag(p) 
-                            , stop_criterion = 10^(-5)
-                            , inter=100,epsilon1 = 0.001
-                            , epsilon2 = 0.001,fixed_B = T, print_t = T, w=0.5
-                            , fixed_nu = T, fixed_delta = T, sd = 10
-                            , burn_in=500, only_mean=F, print_int = 100){
+#' GEM algorithm for jointHWGraph
+#'
+#' @param data_list a list of data matrices
+#' @param delta value for delta parameter. Default value is p*10
+#' @param nu_list vector of nu values. If a single value is given, then it is used for all groups. Default value is p*10
+#' @param n vector of sample sizes
+#' @param p number of variables 
+#' @param n_groups number of groups
+#' @param iters max iterations used for the gem algorithm
+#' @param B The target matrix. On default, an identity matrix is used 
+#' @param stop_criterion Stopping criterion. Default value is 10^-5
+#' @param print_t If TRUE, then
+#' @param only_mean 
+#' @param print_int 
+#' @param memory_save This option should only be used with extremely large networks p>10,000. If TRUE, then gc-function is used after all matrix operations to save memory
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
+                            , p=NULL,n_groups=NULL,iters = 10000, B= NULL 
+                            , stop_criterion = 10^(-5), print_t = T
+                            , print_int = 100, memory_save=F){
   
-  if(is.null(time_points)){
-    time_points = length(data_list)
+  if(is.null(n_groups)){
+    n_groups = length(data_list)
   }
   if(is.null(p)){
     p = dim(data_list[[1]])[2]
@@ -17,45 +34,47 @@ jointHWGraph_GEM <- function(data_list, delta_list = NULL, nu_list = NULL,  n=NU
   }
   if(is.null(n)){
     n <- c()
-    for(i in 1:time_points){
+    for(i in 1:n_groups){
       n[i] <- dim(data_list[[i]])[1]
     }
     
   }
   
-  if(is.null(delta_list)){
-    delta_list <- rep(p*10,time_points)
+  if(is.null(delta)){
+    delta <- p*10
   }
-  else if (length(delta_list)==1){
-    
-    delta_list <- rep(delta_list,time_points)
-    
-  }
+  
   if(is.null(nu_list)){
-    nu_list <- rep(p*10,time_points)
+    nu_list <- rep(p*10,n_groups)
   }
   else if (length(nu_list)==1){
     
-    nu_list <- rep(nu_list,time_points)
+    nu_list <- rep(nu_list,n_groups)
     
   }
   
   S <- list()
-  for(i in 1:time_points){
-    S[[i]]  <- sample_covariance_cal(data_list[[i]])
+  for(i in 1:n_groups){
+    S[[i]]  <- (t(data_list[[i]])%*%data_list[[i]])/(n[i])
+    #S[[i]]  <- sample_covariance_cal(data_list[[i]])
   }
-  print(p)
+  
+  if(is.null(B)){
+    B <- diag(p)
+  }
+  
+  if(memory_save){
+    gc()
+  }
   
   tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
-                                               nu= nu_list,delta = delta_list, epsilon1 = epsilon1, 
-                                               epsilon2 = epsilon2,fixed_B =fixed_B, 
-                                               print_t = print_t, time_points = time_points,
+                                               nu= nu_list,delta = delta, B = B,
+                                               print_t = print_t, n_groups = n_groups,
                                                print_int=print_int, stop=stop_criterion) 
   
   
-  return(list(omega_list = tvHMFGraph_result$omega,iters=iters,
-              p = p, n = n, nu_list = nu_list, delta_list= delta_list, time_points = time_points,
-              print_int=print_int, stop_criterion=stop_criterion, epsilon1 = epsilon1, epsilon2 = epsilon2,
-              fixed_B  = fixed_B))
+  return(list(omega_list = tvHMFGraph_result$omega,phi = tvHMFGraph_result$phi, iters=iters,
+              p = p, n = n, nu_list = nu_list, delta= delta, n_groups = n_groups,
+              print_int=print_int, stop_criterion=stop_criterion))
   
 }

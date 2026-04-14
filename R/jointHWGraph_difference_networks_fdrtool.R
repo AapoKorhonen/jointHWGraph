@@ -1,12 +1,12 @@
 
-jointHWGraph_difference_networks_fdrtool <- function(jointHWGraph_results, target_FDR = NULL){
+jointHWGraph_difference_networks_fdrtool <- function(jointHWGraph_results, target_FDR = NULL, plot=F,verbose=F){
   
   p <- jointHWGraph_results$p
   
   
   adjacency_matrices <- list()
   
-  for(i in 1:(jointHWGraph_results$time_points-1)){
+  for(i in 1:(jointHWGraph_results$n_groups-1)){
     
     adjacency_matrices_per <- list()
     
@@ -14,7 +14,7 @@ jointHWGraph_difference_networks_fdrtool <- function(jointHWGraph_results, targe
     
     partial_correlations1_Z <- GeneNet::z.transform(partial_correlations1)
     
-    for(ii in (i+1):jointHWGraph_results$time_points ){
+    for(ii in (i+1):jointHWGraph_results$n_groups ){
       
       
       partial_correlations2 <- cov2cor(jointHWGraph_results$omega[[ii]])
@@ -25,7 +25,7 @@ jointHWGraph_difference_networks_fdrtool <- function(jointHWGraph_results, targe
       
       values <- differences[lower.tri(differences)]
       
-      fdr_tul <- fdrtool::fdrtool(values, statistic = "correlation")
+      fdr_tul <- fdrtool::fdrtool(values, statistic = "correlation",plot=plot,verbose=verbose)
       
       
       if(is.null(target_FDR)){

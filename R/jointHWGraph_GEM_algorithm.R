@@ -1,13 +1,18 @@
+########################################################################
+# jointHWGraph, GEM algorithm
+# 
+########################################################################
+
 
 jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n, 
-                                     delta, nu,
-                                     epsilon1, epsilon2,
-                                     fixed_B = FALSE, print_t = TRUE,
-                                     time_points = 1, burn_in = 500, stop_criterion = 10^(-5),print_int =100) {
+                                     delta, nu, B, print_t = TRUE,
+                                     n_groups = 1, stop_criterion = 10^(-5),print_int =100,
+                                     memory_save = F) {
   
   
   updated_data <- data_list
   
+  # Initializing parameters
   
   Phi_0 <- diag(p)
   Omega10 <- diag(p)
@@ -15,15 +20,21 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   L1 <- diag(p)
   shape <- 1
   rate <- 1
-  kk <- time_points 
-  B_i <- diag(1, p, p)
-  current_iter_omega <- lapply(seq_len(time_points), function(i) diag(1, p, p))
+  kk <- n_groups 
+  B_i <- B
+  current_iter_omega <- lapply(seq_len(n_groups), function(i) diag(1, p, p))
   
   missing_groups <- c()
   missing_vals <- list()
   missing <- F
   
-  for(i in 1:time_points){
+  if(memory_save){
+    gc()
+  }
+  # Checking for missing values 
+  
+  
+  for(i in 1:n_groups){
     
     missing_vals[[i]] <- which(is.na(rowSums(data_list[[i]])))
     
@@ -36,17 +47,10 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
   for (i in seq_len(iters)) {
     
     
-    if (!fixed_B) {
-      for (ii in 1:p) {
-        shape <- (delta[1] + p - 1) * 0.5 + epsilon1
-        rate <-  (delta[1] + p - 1)*(Phi_0[ii, ii] * 0.5) + epsilon2
-        B_i[ii, ii] <- (shape-1)/rate
-      }
-    }
+    # E-step: Updating missing values
     
     if(missing){
       for(mi in missing_groups){
-        print(mi)
         for(mv in missing_vals[[mi]]){
           
           missing_variables <- which(is.na(data_list[[mi]][mv,]))
@@ -55,53 +59,96 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
                                                  %*%current_iter_omega[[mi]][ missing_variables, -missing_variables]
                                                  %*%data_list[[mi]][mv,-missing_variables])
           
+          
         }
-        
-        S[[mi]] <- sample_covariance_cal(updated_data[[mi]])
+        #S[[mi]] <- sample_covariance_cal(updated_data[[mi]])
+        S[[i]]  <- (t(updated_data[[mi]])%*%updated_data[[mi]])/(n[mi])
+        if(memory_save){
+          gc()
+        }
       }
       
     }
     
+    # E-step: Updating Phi matrix
+    
     L1 <- (nu[1] + p - 1)*current_iter_omega[[1]]
     deg <- nu[1] + p - 1
-    for(lk in 2:time_points){
+    
+    for(lk in 2:n_groups){
       L1 <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
       deg <- deg + nu[lk] + p - 1
     }
-    L1 <- L1 + (delta[1] + p - 1)*B_i
-    L1 <- chol(L1)
-    L1 <- chol2inv(L1)
-    deg <- deg + delta[1] + p - 1
     
-    if (fixed_B == T) {
-      Phi_0[] <- (deg)*L1
-    }
-    else{
-      Phi_0[] <- (deg-p-1)*L1
-    }
+    L1 <- L1 + (delta + p - 1)*B_i
     
-    L1 <- NULL
-    
-    if(p>=1000){
+    if(memory_save){
       gc()
     }
     
-    for (k in 1:(time_points)) {
+    L1 <- chol(L1)
+    if(memory_save){
+      gc()
+    }
+    
+    L1 <- chol2inv(L1)
+    if(memory_save){
+      gc()
+    }
+    
+    deg <- deg + delta + p - 1
+    
+    
+    Phi_0 <- (deg-p-1)*L1
+    
+    
+    L1 <- NULL
+    
+    if(memory_save){
+      gc()
+    }
+    
+    # M-step: Updating presicion matrices
+    
+    for (k in 1:(n_groups)) {
+      
       
       L1 <- (nu[k] + p - 1)*Phi_0 + n[k] * S[[k]]
+      
+      if(memory_save){
+        gc()
+      }
+      
       L1 <- chol( L1 )
+      
+      if(memory_save){
+        gc()
+      }
+      
       L1 <- chol2inv( L1)
+      
+      if(memory_save){
+        gc()
+      }
+      
       Omega10 <- (n[k] + nu[k] +p-1-p-1)*L1
       diff <- current_iter_omega[[k]] - Omega10
       norms[k] <-  sqrt(sum((current_iter_omega[[k]] - Omega10)^2))
-      #norms[k] <- norm(current_iter_omega[[k]] - Omega10,type="F")
       current_iter_omega[[k]] <- Omega10
+      
+      if(memory_save){
+        gc()
+      }
+      
     }
     Omega10 <- NULL
     L1 <- NULL
-    if(p>=10000){
+    
+    
+    if(memory_save){
       gc()
     }
+    
     
     if(i > 1){
       

@@ -1,17 +1,17 @@
 
-jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL){
+jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL, plot=F,verbose=F){
   
   p <- jointHWGraph_results$p
   
   
   adjacency_matrices <- list()
-  for(i in 1:jointHWGraph_results$time_points){
+  for(i in 1:jointHWGraph_results$n_groups){
     
     partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
     
     values <- partial_correlations[lower.tri(partial_correlations)]
     z_values <- values
-    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation")
+    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
     
     
     if(is.null(target_FDR)){
