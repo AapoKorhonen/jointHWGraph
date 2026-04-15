@@ -26,8 +26,14 @@ jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_n
       list11 <- fdr_tul$qval <= FDRs[ii]
       list11[list11 == T] <- 1
       list11[list11 == F] <- 0
-      FP[ii] <- round(FDRs[ii]*sum(list11))
+      FP[ii] <- floor(FDRs[ii]*sum(list11))
       TP[ii] <- sum(list11) - FP[ii]
+      
+      if(expected_number_of_connections == 0){
+        FP[ii]>0
+        break
+      }
+        
     }
     
     N <- (p^2-p)/2 - expected_number_of_connections
