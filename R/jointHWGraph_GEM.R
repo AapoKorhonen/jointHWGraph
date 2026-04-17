@@ -76,6 +76,6 @@ jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
   
   return(list(omega_list = tvHMFGraph_result$omega,phi = tvHMFGraph_result$phi, iters=iters,
               p = p, n = n, nu_list = nu_list, delta= delta, n_groups = n_groups,
-              print_int=print_int, stop_criterion=stop_criterion))
+              print_int=print_int, stop_criterion=stop_criterion, memory_save = memory_save))
   
 }
