@@ -3,8 +3,6 @@
 #' @param n The number of samples for different groups. A list or a single value. If a single value, then all groups have the same number of samples. 
 #' @param p The number of variables.
 #' @param d The number of connection in the network. Default value is p.
-#' @param lower_p Lower limit for the sampled partial correlation. This should be positive value. Samples between lower_p - upper_p and -lower_p - -upper_p
-#' @param upper_p Upper limit for the sampled partial correlation. This should be positive value.
 #' @param similarity The similarity between groups' networks. Default value is 0.50
 #' @param number_of_groups The number of groups. Default value is 2.
 #'
@@ -12,7 +10,7 @@
 #' @export
 #'
 #' @example path.R
-group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarity = 0.50, number_of_groups=2){
+group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,positives=0.5){
   
   
   
@@ -39,11 +37,11 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
   connections_S <- rep(0, (common+differences*number_of_groups))
   
   for(i in 1:(common+differences*number_of_groups)){
-    if (0.5 < runif(1)){
-      connections_S[i] <- runif(1, lower_p, upper_p)
+    if (positives < runif(1)){
+      connections_S[i] <- 1
     }
     else{
-      connections_S[i] <- runif(1, -1*upper_p, -1*lower_p)
+      connections_S[i] <- -1
       
       
     }
@@ -79,17 +77,14 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
   
   for(i in 1:number_of_groups){
     
-    adjacency_list[[i]] <- rags2ridges::adjacentMat(presicion_list[[i]])
+    adjacency_list[[i]] <- presicion_list[[i]]
     
     omega <- presicion_list[[i]] 
     
-    omega_old <- omega
-    
     diag(omega) <- 0
     
-    diag(omega) = abs(min(eigen(omega,symmetric=T,only.values=T)$values)) + 0.2
-    #diag(omega) = abs(RSpectra::eigs_sym(omega, which="SM", k=1, opts = list(maxitr = 10000))$values) + 0.2
-    
+    diag(omega) = abs(min(eigen(omega,symmetric=T,only.values=T)$values)) + 0.1
+
     sigma = cov2cor(chol2inv(chol(omega)))
     sigma_list[[i]] <- sigma
     omega = chol2inv(chol(sigma))
@@ -104,6 +99,6 @@ group_data_generator <- function(n, p, d ,lower_p = 0.2,upper_p = 0.9, similarit
   }
   
   
-  return(list(data = data_list, precision_matrix = omega_list, covariance_matrix = omega_list, adjacency_matrix=adjacency_list))
+  return(list(data = data_list, precision_matrix = omega_list, covariance_matrix = sigma_list, adjacency_matrix=adjacency_list))
 }
 

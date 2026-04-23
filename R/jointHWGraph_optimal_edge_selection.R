@@ -1,5 +1,5 @@
 
-jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL, plot=F,verbose=F, reselect= F, FDR_results = NULL, memory_save=NULL){
+jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL, plot=F,verbose=F, memory_save=NULL){
   
   if(is.null(expected_number_of_connections)){
     expected_number_of_connections <- jointHWGraph_results$p
@@ -15,25 +15,22 @@ jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_n
   for(i in 1:jointHWGraph_results$n_groups){
     
     
-    if(reselect == T){
-      fdr_tul <- FDR_results
+    
+    if(memory_save){
+      gc()
     }
-    else{
-      if(memory_save){
-        gc()
-      }
-      partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
-      
-      values <- partial_correlations[lower.tri(partial_correlations)]
-      z_values <- values
-      if(memory_save){
-        gc()
-      }
-      fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
-      if(memory_save){
-        gc()
-      }
+    partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
+    
+    values <- partial_correlations[lower.tri(partial_correlations)]
+    z_values <- values
+    if(memory_save){
+      gc()
     }
+    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
+    if(memory_save){
+      gc()
+    }
+    
     
     
     FDRs <- seq(0.00001, 0.99, length.out=1000)
@@ -81,5 +78,5 @@ jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_n
   }
   
   
-  return(list(adjacency_matrices=adjacency_matrices, fdrtool_results = fdr_tul))
+  return(list(adjacency_matrices=adjacency_matrices))
 }

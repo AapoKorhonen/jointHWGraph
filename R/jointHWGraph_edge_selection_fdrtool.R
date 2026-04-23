@@ -1,5 +1,5 @@
 
-jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL, plot=F,verbose=F, reselect= F, FDR_results = NULL, memory_save=NULL){
+jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL, plot=F,verbose=F, FDR_results = NULL, memory_save=NULL){
   
   p <- jointHWGraph_results$p
   
@@ -8,27 +8,24 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
   }
   
   adjacency_matrices <- list()
+  
   for(i in 1:jointHWGraph_results$n_groups){
     
-    if(reselect == T){
-      fdr_tul <- FDR_results
+    if(memory_save){
+      gc()
     }
-    else{
-      if(memory_save){
-        gc()
-      }
-      partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
-      
-      values <- partial_correlations[lower.tri(partial_correlations)]
-      z_values <- values
-      if(memory_save){
-        gc()
-      }
-      fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
-      if(memory_save){
-        gc()
-      }
+    partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
+    
+    values <- partial_correlations[lower.tri(partial_correlations)]
+    z_values <- values
+    if(memory_save){
+      gc()
     }
+    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
+    if(memory_save){
+      gc()
+    }
+    
     
     if(is.null(target_FDR)){
       list11 <- fdr_tul$qval <= fdr_tul$param[1]

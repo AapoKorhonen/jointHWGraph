@@ -75,10 +75,10 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     
     # E-step: Updating Phi matrix
     
-    L1 <- (nu[1] + p - 1)*current_iter_omega[[1]]
-    deg <- nu[1] + p - 1
+    L1 <- 0
+    deg <- 0
     
-    for(lk in 2:n_groups){
+    for(lk in 1:n_groups){
       L1 <- L1 + (nu[lk] + p - 1)*current_iter_omega[[lk]]
       deg <- deg + nu[lk] + p - 1
     }
