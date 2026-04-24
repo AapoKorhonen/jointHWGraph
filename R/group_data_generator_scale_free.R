@@ -146,7 +146,7 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
     sigma_list[[i]] = cov2cor(   chol2inv(  chol(omega[[i]])  ))
     omega_list[[i]] = chol2inv(  chol(sigma_list[[i]]))
     
-    x = HMFGraph::mvrnorm_cpp(n[i], rep(0, p), sigma_list[[i]])
+    x = mvrnorm_cpp(n[i], rep(0, p), sigma_list[[i]])
     data_list[[i]] <- x
     adjacency_matrices[[i]] <- abs(adjacency_matrices[[i]])
   }

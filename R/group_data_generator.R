@@ -77,7 +77,7 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
   
   for(i in 1:number_of_groups){
     
-    adjacency_list[[i]] <- presicion_list[[i]]
+    adjacency_list[[i]] <- abs(presicion_list[[i]])
     
     omega <- presicion_list[[i]] 
     
@@ -92,7 +92,7 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
     omega_list[[i]] <- omega
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = HMFGraph::mvrnorm_cpp(n[i], rep(0, p), sigma)
+    x = mvrnorm_cpp(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 
