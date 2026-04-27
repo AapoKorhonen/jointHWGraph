@@ -65,7 +65,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
           gc()
         }
         #S[[mi]] <- sample_covariance_cal(updated_data[[mi]])
-        S[[i]]  <- (t(updated_data[[mi]])%*%updated_data[[mi]])/(n[mi])
+        S[[mi]]  <- (t(updated_data[[mi]])%*%updated_data[[mi]])/(n[mi])
         if(memory_save){
           gc()
         }

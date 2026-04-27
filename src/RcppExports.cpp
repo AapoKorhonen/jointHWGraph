@@ -11,6 +11,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// mvrnorm_cpp
+arma::mat mvrnorm_cpp(int n, const arma::vec& mu, const arma::mat& Sigma);
+RcppExport SEXP _jointHWGraph_mvrnorm_cpp(SEXP nSEXP, SEXP muSEXP, SEXP SigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Sigma(SigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(mvrnorm_cpp(n, mu, Sigma));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpparma_hello_world
 arma::mat rcpparma_hello_world();
 RcppExport SEXP _jointHWGraph_rcpparma_hello_world() {
@@ -56,6 +69,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_jointHWGraph_mvrnorm_cpp", (DL_FUNC) &_jointHWGraph_mvrnorm_cpp, 3},
     {"_jointHWGraph_rcpparma_hello_world", (DL_FUNC) &_jointHWGraph_rcpparma_hello_world, 0},
     {"_jointHWGraph_rcpparma_outerproduct", (DL_FUNC) &_jointHWGraph_rcpparma_outerproduct, 1},
     {"_jointHWGraph_rcpparma_innerproduct", (DL_FUNC) &_jointHWGraph_rcpparma_innerproduct, 1},
