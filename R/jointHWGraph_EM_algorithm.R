@@ -49,28 +49,27 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     
     # E-step: Updating missing values
     
-    if(missing){
-      for(mi in missing_groups){
-        for(mv in missing_vals[[mi]]){
-          
-          missing_variables <- which(is.na(data_list[[mi]][mv,]))
-          
-          updated_data[[mi]][mv,missing_variables] <- t(-1*solve(current_iter_omega[[mi]][ missing_variables, missing_variables])
-                                                 %*%current_iter_omega[[mi]][ missing_variables, -missing_variables]
-                                                 %*%data_list[[mi]][mv,-missing_variables])
-          
-          
+    if (missing) {
+      for (mi in missing_groups) {
+        S[[mi]] <- diag(p)*0
+        for (mv in missing_vals[[mi]] ) {
+          missing_variables <- which(is.na(data_list[[mi]][mv,
+          ]))
+          omega_missing <- solve(current_iter_omega[[mi]][missing_variables,
+                                                          missing_variables])
+          updated_data[[mi]][mv, missing_variables] <- t(-1 *
+                                                           omega_missing %*% current_iter_omega[[mi]][missing_variables,
+                                                                                                      -missing_variables] %*% data_list[[mi]][mv,
+                                                                                                                                              -missing_variables])
+          S[[mi]][missing_variables,missing_variables] <- S[[mi]][missing_variables,missing_variables]  + omega_missing
         }
-        if(memory_save){
-          gc()
-        }
-        #S[[mi]] <- sample_covariance_cal(updated_data[[mi]])
-        S[[mi]]  <- (t(updated_data[[mi]])%*%updated_data[[mi]])/(n[mi])
-        if(memory_save){
+        
+        S[[mi]] <- (S[[mi]] +  t(updated_data[[mi]])%*%updated_data[[mi]] )/ n[mi]
+        
+        if (memory_save) {
           gc()
         }
       }
-      
     }
     
     # E-step: Updating Phi matrix
@@ -102,7 +101,7 @@ jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n,
     deg <- deg + delta + p - 1
     
     
-    Phi_0 <- (deg-p-1)*L1
+    Phi_0 <- (deg)*L1
     
     
     L1 <- NULL

@@ -1,4 +1,4 @@
-#' GEM algorithm for jointHWGraph
+#' EM algorithm for jointHWGraph
 #'
 #' @param data_list a list of data matrices
 #' @param delta value for delta parameter. Default value is p*10
@@ -9,6 +9,7 @@
 #' @param iters max iterations used for the gem algorithm
 #' @param B The target matrix. On default, an identity matrix is used 
 #' @param stop_criterion Stopping criterion. Default value is 10^-5
+#' @param scale_data If TRUE, then data is scale with scale-function
 #' @param print_t If TRUE, then
 #' @param only_mean 
 #' @param print_int 
@@ -19,9 +20,9 @@
 #'
 #' @examples
 #' 
-jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
+jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
                             , p=NULL,n_groups=NULL,iters = 10000, B= NULL 
-                            , stop_criterion = 10^(-5), print_t = T
+                            , stop_criterion = 10^(-5),scale_data= T, print_t = T
                             , print_int = 100, memory_save=F){
   
   if(is.null(n_groups)){
@@ -29,9 +30,8 @@ jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
   }
   if(is.null(p)){
     p = dim(data_list[[1]])[2]
-    
-    
   }
+  
   if(is.null(n)){
     n <- c()
     for(i in 1:n_groups){
@@ -55,8 +55,10 @@ jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
   
   S <- list()
   for(i in 1:n_groups){
+    if(scale_data){
+      data_list[[i]] <- scale(data_list[[i]])
+    }
     S[[i]]  <- (t(data_list[[i]])%*%data_list[[i]])/(n[i])
-    #S[[i]]  <- sample_covariance_cal(data_list[[i]])
   }
   
   if(is.null(B)){
@@ -67,14 +69,14 @@ jointHWGraph_GEM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
     gc()
   }
   
-  tvHMFGraph_result <- jointHWGraph_GEM_algorithm(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
+  jointHWGraph_result <- jointHWGraph_EM_algorithm(iters=iters,S = S, data_list=data_list, p=p,  n=n, 
                                                nu= nu_list,delta = delta, B = B,
                                                print_t = print_t, n_groups = n_groups,
                                                print_int=print_int, stop=stop_criterion,
                                                memory_save = memory_save) 
   
   
-  return(list(omega_list = tvHMFGraph_result$omega,phi = tvHMFGraph_result$phi, iters=iters,
+  return(list(omega_list = jointHWGraph_result$omega,phi = jointHWGraph_result$phi, iters=iters,
               p = p, n = n, nu_list = nu_list, delta= delta, n_groups = n_groups,
               print_int=print_int, stop_criterion=stop_criterion, memory_save = memory_save))
   

@@ -1,16 +1,25 @@
 
-jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL, plot=F,verbose=F, FDR_results = NULL, memory_save=NULL){
+jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, FDR_results = NULL, memory_save=NULL){
   
   p <- jointHWGraph_results$p
+  
+  
+  if(verbose){
+    cat("Selecting edges for the networks using fdrtool \n")
+  }
   
   if(is.null(memory_save)){
     memory_save <- jointHWGraph_results$memory_save 
   }
   
   adjacency_matrices <- list()
-  
+  if(verbose){
+    cat("In total ", jointHWGraph_results$n_groups, " networks to be constructured \n")
+  }
   for(i in 1:jointHWGraph_results$n_groups){
-    
+    if(verbose){
+      cat("Constructing the network:", i, "\n")
+    }
     if(memory_save){
       gc()
     }
@@ -21,7 +30,7 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
     if(memory_save){
       gc()
     }
-    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot,verbose=verbose)
+    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot_fdrtool,verbose=verbose_fdrtool)
     if(memory_save){
       gc()
     }
@@ -43,6 +52,9 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
     adjacency_matrices[[i]] <- ad1
     if(memory_save){
       gc()
+    }
+    if(verbose){
+      cat("Network ", i, " ready", "\n")
     }
   }
   
