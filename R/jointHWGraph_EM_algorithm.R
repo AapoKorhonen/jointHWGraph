@@ -1,10 +1,24 @@
-########################################################################
-# jointHWGraph, GEM algorithm
-# 
-########################################################################
-
-
-jointHWGraph_GEM_algorithm <- function(iters, S, data_list, p, n, 
+#' jointHWGraph, EM algorithm
+#'
+#' @param iters 
+#' @param S 
+#' @param data_list 
+#' @param p 
+#' @param n 
+#' @param delta 
+#' @param nu 
+#' @param B 
+#' @param print_t 
+#' @param n_groups 
+#' @param stop_criterion 
+#' @param print_int 
+#' @param memory_save 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n, 
                                      delta, nu, B, print_t = TRUE,
                                      n_groups = 1, stop_criterion = 10^(-5),print_int =100,
                                      memory_save = F) {
