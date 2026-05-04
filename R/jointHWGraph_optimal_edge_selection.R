@@ -55,10 +55,10 @@ jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_n
     FN <- pmax(FN, 0)
     F1 <- (2 * TP)/(2 * TP + FP + FN)
 
-    list11 <- fdr_tul$qval < sort(fdr_tul$qval)[which(F1==max(F1))[length(which(F1==max(F1)))]]
+    list11 <- fdr_tul$qval <= sort(fdr_tul$qval)[which(F1==max(F1))[length(which(F1==max(F1)))]]
     
     if(max(TP) == 0){
-      list11 <- fdr_tul$qval <= sort(fdr_tul$qval)[1]
+      list11 <- fdr_tul$qval < sort(fdr_tul$qval)[1]
     }
     
     if(memory_save){
