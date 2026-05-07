@@ -69,8 +69,8 @@ jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n,
         for (mv in missing_vals[[mi]] ) {
           missing_variables <- which(is.na(data_list[[mi]][mv,
           ]))
-          omega_missing <- solve(current_iter_omega[[mi]][missing_variables,
-                                                          missing_variables])
+          omega_missing <- chol2inv(chol(current_iter_omega[[mi]][missing_variables,
+                                                          missing_variables]))
           updated_data[[mi]][mv, missing_variables] <- t(-1 *
                                                            omega_missing %*% current_iter_omega[[mi]][missing_variables,
                                                                                                       -missing_variables] %*% data_list[[mi]][mv,
