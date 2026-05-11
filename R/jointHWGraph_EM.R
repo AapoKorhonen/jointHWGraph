@@ -23,7 +23,8 @@
 jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
                             , p=NULL,n_groups=NULL,iters = 10000, B= NULL 
                             , stop_criterion = 10^(-5),scale_data= T, print_t = T
-                            , print_int = 100, memory_save=F, cut_off = 1, empirical_B= F){
+                            , print_int = 100, memory_save=F, cut_off = 1, empirical_B= F
+                            , prior_B =F, eps1= 0.01,eps2=0.01){
   
   if(is.null(n_groups)){
     n_groups = length(data_list)
@@ -77,7 +78,7 @@ jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
                                                nu= nu_list,delta = delta, B = B,
                                                print_t = print_t, n_groups = n_groups,
                                                print_int=print_int, stop=stop_criterion,
-                                               memory_save = memory_save) 
+                                               memory_save = memory_save, prior_B = prior_B, eps1= eps1,eps2=eps2) 
   
   
   return(list(omega_list = jointHWGraph_result$omega,phi = jointHWGraph_result$phi, iters=iters,

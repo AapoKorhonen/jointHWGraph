@@ -21,7 +21,7 @@
 jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n, 
                                      delta, nu, B, print_t = TRUE,
                                      n_groups = 1, stop_criterion = 10^(-5),print_int =100,
-                                     memory_save = F) {
+                                     memory_save = F, prior_B =F, eps1= 0.01,eps2=0.01) {
   
   
   updated_data <- data_list
@@ -86,6 +86,16 @@ jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n,
       }
     }
     
+    if(prior_B){
+      for( ij in 1:p){
+        scale <- (delta + p - 1)/2 + eps1
+        #rate <- Phi_0[ij,ij]*(delta + p - 1)/2 + eps2
+        rate <- Phi_0[ij,ij]/2 + eps2
+        B_i[ij,ij] <- scale/rate
+        
+      }
+    }
+    
     # E-step: Updating Phi matrix
     
     L1 <- 0
@@ -96,7 +106,12 @@ jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n,
       deg <- deg + nu[lk] + p - 1
     }
     
-    L1 <- L1 + (delta + p - 1)*B_i
+    if(prior_B){
+      L1 <- L1 + B_i
+    }
+    else{
+      L1 <- L1 + (delta + p - 1)*B_i
+    }
     
     if(memory_save){
       gc()
@@ -114,9 +129,12 @@ jointHWGraph_EM_algorithm <- function(iters, S, data_list, p, n,
     
     deg <- deg + delta + p - 1
     
-    
-    Phi_0 <- (deg)*L1
-    
+    if(prior_B){
+      Phi_0 <- (deg-p+1)*L1
+    }
+    else{
+      Phi_0 <- (deg)*L1
+    }
     
     L1 <- NULL
     
