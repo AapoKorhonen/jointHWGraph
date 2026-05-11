@@ -1,5 +1,7 @@
 
-jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, memory_save=NULL){
+jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL,
+                                                verbose=T, plot_fdrtool=F,verbose_fdrtool=F, 
+                                                memory_save=NULL, limit_FN = F){
   
   if(verbose){
     cat("Selecting edges for the networks using fdrtool \n")
@@ -52,7 +54,9 @@ jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_n
     N <- (p^2-p)/2 - expected_number_of_connections
     TN <- N - FP
     FN <- expected_number_of_connections - TP
-    FN <- pmax(FN, 0)
+    if(limit_FN){
+      FN <- pmax(FN, 0)
+    }
     F1 <- (2 * TP)/(2 * TP + FP + FN)
 
     list11 <- fdr_tul$qval <= sort(fdr_tul$qval)[which(F1==max(F1))[length(which(F1==max(F1)))]]
