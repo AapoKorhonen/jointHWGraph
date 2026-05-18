@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @example path.R
-group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,positives=0.5){
+group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,positives=0.5, rho= 0.25, lower_w = 0.2, upper_w=0.8){
   
   
   
@@ -38,10 +38,10 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
   
   for(i in 1:(common+differences*number_of_groups)){
     if (positives < runif(1)){
-      connections_S[i] <- 1
+      connections_S[i] <- runif(1,  min= lower_w ,max=upper_w )
     }
     else{
-      connections_S[i] <- -1
+      connections_S[i] <- -1*runif(1,  min= lower_w ,max=upper_w )
       
       
     }
@@ -78,11 +78,15 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
   for(i in 1:number_of_groups){
     
     adjacency_list[[i]] <- abs(presicion_list[[i]])
-    
+    adjacency_list[[i]][adjacency_list[[i]]>0] <- 1
     omega <- presicion_list[[i]] 
     
     diag(omega) <- 0
     
+    # diag(omega) <- rho
+    # b <- diag(diag(omega), p)
+    # diag(omega) <- diag(omega) + abs(rowSums(abs(omega) - b))
+    # 
     diag(omega) = abs(min(eigen(omega,symmetric=T,only.values=T)$values)) + 0.1
 
     sigma = cov2cor(chol2inv(chol(omega)))
@@ -92,7 +96,7 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
     omega_list[[i]] <- omega
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = mvrnorm_cpp(n[i], rep(0, p), sigma)
+    x = jointHWGraph::mvrnorm_cpp(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 

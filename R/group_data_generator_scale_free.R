@@ -5,12 +5,14 @@
 #' @param number_of_groups 
 #' @param positives 
 #' @param similarity 
+#' @param lower_weight
 #'
 #' @return
 #' @export
 #'
 #' @examples
-group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,positives=0.5, similarity=0.9){
+group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,positives=0.5, similarity=0.9
+                                            ,lower_w= 0.2, upper_w = 0.9){
   
   
   if(length(n) == 1){
@@ -24,12 +26,12 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
   diag(org_adjacency_matrices) <- 0
   
   if(runif(1) > positives){# half of the partial correlations are set to be positive and the other half negatives
-    org_adjacency_matrices[1,2] <- 1
-    org_adjacency_matrices[2,1] <- 1
+    org_adjacency_matrices[1,2] <- runif(1,  min= lower_w ,max=upper_w )
+    org_adjacency_matrices[2,1] <- org_adjacency_matrices[1,2]
   }
   else{
-    org_adjacency_matrices[1,2] <- -1
-    org_adjacency_matrices[2,1] <- -1
+    org_adjacency_matrices[1,2] <- -1*runif(1,  min= lower_w ,max=upper_w )
+    org_adjacency_matrices[2,1] <- org_adjacency_matrices[1,2]
   }
   
   for(i in 3:p){ 
@@ -38,11 +40,11 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
     
     # half of the partial correlations are set to be positive and the other half negatives
     if(runif(1) > positives){
-      org_adjacency_matrices[i,con] <- 1
+      org_adjacency_matrices[i,con] <- org_adjacency_matrices[1,2]
       org_adjacency_matrices[con,i] <- org_adjacency_matrices[i,con]
     }
     else{
-      org_adjacency_matrices[i,con] <- -1
+      org_adjacency_matrices[i,con] <- -1*org_adjacency_matrices[1,2]
       org_adjacency_matrices[con,i] <- org_adjacency_matrices[i,con]
     }
   }
@@ -65,7 +67,7 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
       ind <- sample(1:p,1,prob = csum/sum(csum)  )
       ind <- sample(values,1 )
       
-      numbers <- which(abs(org_adjacency_matrices[ind,])==1)
+      numbers <- which(abs(org_adjacency_matrices[ind,])>0)
       if(length(numbers)==1){
         ind2 <- numbers
       }
@@ -113,16 +115,16 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
         }
         
         if(runif(1) > positives){ # half of the partial correlations are set to be positive and the other half negatives
-          adjacency_matrices[[i]][ind3,ind4] <- 1
-          adjacency_matrices[[i]][ind4,ind3] <- 1
-          org_adjacency_matrices[ind3,ind4] <- 1 # include the new connection to org_adjacency for easy checking
-          org_adjacency_matrices[ind4,ind3] <- 1 
+          adjacency_matrices[[i]][ind3,ind4] <- runif(1,  min= lower_w ,max=upper_w )
+          adjacency_matrices[[i]][ind4,ind3] <-  adjacency_matrices[[i]][ind3,ind4]
+          org_adjacency_matrices[ind3,ind4] <- adjacency_matrices[[i]][ind3,ind4] # include the new connection to org_adjacency for easy checking
+          org_adjacency_matrices[ind4,ind3] <- org_adjacency_matrices[ind3,ind4] 
         }
         else{
-          adjacency_matrices[[i]][ind3,ind4] <- -1
-          adjacency_matrices[[i]][ind4,ind3] <- -1
-          org_adjacency_matrices[ind3,ind4] <- -1 # include the new connection to org_adjacency for easy checking
-          org_adjacency_matrices[ind4,ind3] <- -1 
+          adjacency_matrices[[i]][ind3,ind4] <- -1*runif(1,  min= lower_w ,max=upper_w )
+          adjacency_matrices[[i]][ind4,ind3] <- adjacency_matrices[[i]][ind3,ind4]
+          org_adjacency_matrices[ind3,ind4] <- adjacency_matrices[[i]][ind3,ind4] # include the new connection to org_adjacency for easy checking
+          org_adjacency_matrices[ind4,ind3] <- adjacency_matrices[[i]][ind3,ind4]
         }
         
         
@@ -143,11 +145,13 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
     
     diag(omega[[i]]) = abs(min(eigen(omega[[i]] , only.values = T, symmetric = T )$values)) + 0.1
     
-    sigma_list[[i]] = cov2cor(   chol2inv(  chol(omega[[i]])  ))
+    sigma_list[[i]] = cov2cor(   chol2inv(chol(omega[[i]])  ))
     omega_list[[i]] = chol2inv(  chol(sigma_list[[i]]))
     
     x = mvrnorm_cpp(n[i], rep(0, p), sigma_list[[i]])
     data_list[[i]] <- x
+    
+    adjacency_matrices[[i]][abs(adjacency_matrices[[i]]) > 0] <- 1
     adjacency_matrices[[i]] <- abs(adjacency_matrices[[i]])
   }
   
