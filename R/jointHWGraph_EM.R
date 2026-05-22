@@ -80,7 +80,7 @@ jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
                                                memory_save = memory_save) 
   
   
-  return(list(omega_list = jointHWGraph_result$omega,phi = jointHWGraph_result$phi, iters=iters,
+  return(list(omega_list = jointHWGraph_result$omega, iters=iters,
               p = p, n = n, nu_list = nu_list, delta= delta, n_groups = n_groups,
               print_int=print_int, stop_criterion=stop_criterion, memory_save = memory_save))
   
