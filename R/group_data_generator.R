@@ -77,8 +77,8 @@ group_data_generator <- function(n, p, d=NULL, similarity = 0.50, number_of_grou
   
   for(i in 1:number_of_groups){
     
-    adjacency_list[[i]] <- abs(presicion_list[[i]])
-    adjacency_list[[i]][adjacency_list[[i]]>0] <- 1
+    adjacency_list[[i]] <- ceiling( abs(presicion_list[[i]]) )
+    adjacency_list[[i]][adjacency_list[[i]]>1] <- 1
     omega <- presicion_list[[i]] 
     
     diag(omega) <- 0

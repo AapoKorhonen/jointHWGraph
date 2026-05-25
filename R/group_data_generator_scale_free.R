@@ -36,7 +36,7 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
   }
   
   for(i in 3:p){ 
-    degrees <- colSums(abs(org_adjacency_matrices))
+    degrees <- colSums(ceiling(abs(org_adjacency_matrices)))
     con <- sample(1:p,1 , prob =  degrees/sum(degrees) )
     
     # half of the partial correlations are set to be positive and the other half negatives
@@ -63,7 +63,7 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
     for(ii in 1:unique_connections){
       # Remove connections from the "original/common" network
       
-      csum <- colSums(abs(org_adjacency_matrices) )
+      csum <- colSums(ceiling(abs(org_adjacency_matrices)) )
       values <- which(csum>0)
       ind <- sample(1:p,1,prob = csum/sum(csum)  )
       ind <- sample(values,1 )
@@ -71,6 +71,9 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
       numbers <- which(abs(org_adjacency_matrices[ind,])>0)
       if(length(numbers)==1){
         ind2 <- numbers
+      }
+      else if(length(numbers)==0){
+        ind2 <- 1 # just in case if no connection exist to be removed
       }
       else{
         ind2 <- sample(numbers,1)
@@ -92,8 +95,7 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
       
       for(i in 1:number_of_groups){
         
-        csum <- colSums(abs(adjacency_matrices[[i]]))
-        
+        csum <- colSums(ceiling(abs(adjacency_matrices[[i]])))
         probs <- (csum-1) # degree + 1, because diagonal elements are 1 
         #ind3 <- sample(1:p,1 )
         if(sum(probs)==0){
@@ -152,8 +154,8 @@ group_data_generator_scale_free <- function(n=100, p=100 ,number_of_groups=2,pos
     x = mvrnorm_cpp(n[i], rep(0, p), sigma_list[[i]])
     data_list[[i]] <- x
     
-    adjacency_matrices[[i]][abs(adjacency_matrices[[i]]) > 0] <- 1
-    adjacency_matrices[[i]] <- abs(adjacency_matrices[[i]])
+    #adjacency_matrices[[i]][abs(adjacency_matrices[[i]]) > 0] <- 1
+    adjacency_matrices[[i]] <- ceiling(abs(adjacency_matrices[[i]]))
   }
   
   sim = list(data = data_list, covariance_matrix = sigma_list, precision_matrix = omega_list, adjacency_matrix= adjacency_matrices)
