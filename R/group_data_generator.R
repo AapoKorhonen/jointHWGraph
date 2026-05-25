@@ -10,12 +10,12 @@
 #' @export
 #'
 #' @example path.R
-group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,positives=0.5, rho= 0.25, lower_w = 0.2, upper_w=0.8){
+group_data_generator <- function(n, p, d=NULL, similarity = 0.50, number_of_groups=2,positives=0.5, rho= 0.25, lower_w = 0.2, upper_w=0.8){
   
   
   
   
-  if(d==0){
+  if(is.null(d)){
     d = p
   }
   
@@ -83,10 +83,6 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
     
     diag(omega) <- 0
     
-    # diag(omega) <- rho
-    # b <- diag(diag(omega), p)
-    # diag(omega) <- diag(omega) + abs(rowSums(abs(omega) - b))
-    # 
     diag(omega) = abs(min(eigen(omega,symmetric=T,only.values=T)$values)) + 0.1
 
     sigma = cov2cor(chol2inv(chol(omega)))
@@ -94,9 +90,10 @@ group_data_generator <- function(n, p, d, similarity = 0.50, number_of_groups=2,
     omega = chol2inv(chol(sigma))
     
     omega_list[[i]] <- omega
+    
     # Using Rcpp for sampling. This is much faster than mvrnorm in R if p >> 100.
     
-    x = jointHWGraph::mvrnorm_cpp(n[i], rep(0, p), sigma)
+    x = mvrnorm_cpp(n[i], rep(0, p), sigma)
     
     data_list[[i]] <- x
 

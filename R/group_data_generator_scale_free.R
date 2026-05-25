@@ -5,7 +5,8 @@
 #' @param number_of_groups 
 #' @param positives 
 #' @param similarity 
-#' @param lower_weight
+#' @param lower_w
+#' @param upper_w
 #'
 #' @return
 #' @export
