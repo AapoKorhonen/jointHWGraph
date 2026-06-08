@@ -68,7 +68,7 @@ jointHWGraph_edge_selection_HC <- function(jointHWGraph_results,limit=F, alpha0=
     list11 <- pval <= hc_res
     
     
-    list <- rep(0,length(z_values))
+    list <- rep(0,length(values))
     list[list11] <- 1
     
     ad1 <- matrix(0,ncol =  p, nrow =  p)
