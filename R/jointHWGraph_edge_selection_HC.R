@@ -41,7 +41,7 @@ jointHWGraph_edge_selection_HC <- function(jointHWGraph_results,limit=F, alpha0=
       gc()
     }
     
-    x0 =  fdrtool::fndr.cutoff(z_values, "correlation")
+    x0 =  fdrtool::fndr.cutoff(values, "correlation")
     if(memory_save){
       gc()
     }
