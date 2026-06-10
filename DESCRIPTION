@@ -8,8 +8,12 @@ Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line).
 License: What license is it under?
 Imports: 
+    cvCovEst,
+    fdrtool,
     igraph,
+    MASS,
     mvtnorm,
     rags2ridges,
-    Rcpp (>= 1.1.0)
+    Rcpp (>= 1.1.0),
+    RSpectra
 LinkingTo: Rcpp, RcppArmadillo
