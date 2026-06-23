@@ -23,7 +23,7 @@
 jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
                             , p=NULL,n_groups=NULL,iters = 10000, B= NULL 
                             , stop_criterion = 10^(-5),scale_data= T, print_t = T
-                            , print_int = 100, memory_save=F, cut_off = 1, empirical_B= F){
+                            , print_int = 100, memory_save=F, empirical_B= F){
   
   if(is.null(n_groups)){
     n_groups = length(data_list)
@@ -41,7 +41,7 @@ jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
   }
   
   if(is.null(delta)){
-    delta <- p*10
+    delta <- 1
   }
   
   if(is.null(nu_list)){
@@ -66,7 +66,7 @@ jointHWGraph_EM <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
   }
   
   if(empirical_B){
-    B <- select_empirical_target_matrix(data_list, number_or_groups=n_groups,n=n, memory_save=memory_save, cut_off = cut_off)
+    B <- select_empirical_target_matrix(data_list, number_or_groups=n_groups,n=n, memory_save=memory_save,scale_data=scale_data)
   }
   
   if(memory_save){

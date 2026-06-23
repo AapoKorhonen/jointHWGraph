@@ -1,7 +1,7 @@
 
 jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL,
                                                 verbose=T, plot_fdrtool=F,verbose_fdrtool=F, 
-                                                memory_save=NULL, limit_FN = F){
+                                                memory_save=NULL, limit_FN = T){
   
   if(verbose){
     cat("Selecting edges for the networks using fdrtool \n")

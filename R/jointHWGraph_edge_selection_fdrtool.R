@@ -37,7 +37,7 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
     
     
     if(is.null(target_FDR)){
-      list11 <- fdr_tul$qval <= fdr_tul$param[1]
+      list11 <- z_values > fdr_tul$param[1]
     }
     else{
       list11 <- fdr_tul$qval <= target_FDR
