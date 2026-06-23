@@ -1,5 +1,5 @@
 
-jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, FDR_results = NULL, memory_save=NULL){
+jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, FDR_results = 0.05, memory_save=NULL){
   
   p <- jointHWGraph_results$p
   
@@ -35,14 +35,8 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
       gc()
     }
     
-    
-    if(is.null(target_FDR)){
-      list11 <- z_values > fdr_tul$param[1]
-    }
-    else{
-      list11 <- fdr_tul$qval <= target_FDR
-    }
-    
+    list11 <- fdr_tul$qval <= target_FDR
+  
     list <- rep(0,length(z_values))
     list[list11] <- 1
     
