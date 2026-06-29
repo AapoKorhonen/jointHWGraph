@@ -1,73 +1,54 @@
+#' Title
+#'
+#' @param data_list 
+#' @param delta 
+#' @param nu_list 
+#' @param n 
+#' @param p 
+#' @param n_groups 
+#' @param iters 
+#' @param B 
+#' @param stop_criterion 
+#' @param scale_data 
+#' @param print_t 
+#' @param print_int 
+#' @param memory_save 
+#' @param empirical_B 
+#' @param expected_number_of_connections 
+#' @param verbose 
+#' @param plot_fdrtool 
+#' @param verbose_fdrtool 
+#' @param limit_FN 
+#' @param target_FDR 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+jointHWGraph <- function(data_list, delta = NULL, nu_list = NULL,  n=NULL
+                         , p=NULL,n_groups=NULL,iters = 10000, B= NULL 
+                         , stop_criterion = 10^(-5),scale_data= T, print_t = T
+                         , print_int = 100, memory_save=F, empirical_B= F
+                         , FDR_control =FALSE , expected_number_of_connections= NULL
+                         , verbose=T, plot_fdrtool=F,verbose_fdrtool=F
+                         , limit_FN = T, target_FDR = 0.05){
+  
 
-jointHWGraph <- function(data_list, delta_list = NULL, nu_list = NULL, lambda_list = NULL,
-                             n=NULL,p=NULL,time_points=NULL,n_timepoints= 50, expected_number_of_connections=NULL,
-                             FDR=F, target_FDR = 0
-                             ,iters = 10000, n_networks = NULL, B= diag(p), n_permutations = 50,
-                             stop_criterion = 10^(-5)
-                             , inter=100,epsilon1 = 0.001
-                             , epsilon2 = 0.001,fixed_B = T, print_t = T, w=0.5,
-                             fixed_nu = T, fixed_delta = T, fixed_lambda = T, sd = 10,
-                             gamma1 = 1,gamma2 = 1, burn_in=500, only_mean=F,
-                             print_int = 100,row_based=T, parallel_c = T, group_based_threshold= F){
+  jointHWGraph_result <- jointHWGraph_EM(data_list = data_list, delta = delta, nu_list = nu_list,  n=n
+                                       , p=p,n_groups=n_groups,iters = iters, B= B
+                                       , stop_criterion =stop_criterion,scale_data= scale_data, print_t = print_t
+                                       , print_int = print_int, memory_save=memory_save) 
   
-  if(is.null(time_points)){
-    time_points = length(data_list)
+  if(FDR_control){
+    jointHWGraph_edge_selection_results <- jointHWGraph_edge_selection_FDR_control(jointHWGraph_result, target_FDR = target_FDR,verbose=verbose
+                                            , plot_fdrtool=plot_fdrtool,verbose_fdrtool=verbose_fdrtool, memory_save=memory_save)
   }
-  if(is.null(p)){
-    p = dim(data_list[[1]])[2]
-    
-    
-  }
-  if(is.null(n)){
-    n <- c()
-    for(i in 1:time_points){
-      n[i] <- dim(data_list[[i]])[1]
-    }
-    
+  else{
+    jointHWGraph_edge_selection_results <- jointHWGraph_optimal_edge_selection(jointHWGraph_result, expected_number_of_connections= expected_number_of_connections,
+                                           verbose=verbose, plot_fdrtool=plot_fdrtool,verbose_fdrtool=verbose_fdrtool, 
+                                           memory_save=memory_save, limit_FN = limit_FN)
   }
   
-  if(is.null(delta_list)){
-    delta_list <- rep(p,time_points)
-  }
-  else if (length(delta_list)==1){
-    
-    delta_list <- rep(delta_list,time_points)
-    
-  }
-  if(is.null(nu_list)){
-    nu_list <- rep(p*10,time_points)
-  }
-  else if (length(nu_list)==1){
-    
-    nu_list <- rep(nu_list,time_points)
-    
-  }
-  
-  S <- list()
-  for(i in 1:time_points){
-    S[[i]]  <- sample_covariance_cal(data_list[[i]])
-  }
-  print(p)
-  print(nu_list)
-  
-  tvHMFGraph_result <- jointHWGraph_EM_algorithm(iters=iters,S = S,data_list=data_list, p=p,  n=n, 
-                                                  nu= nu_list,delta = delta_list, epsilon1 = epsilon1, 
-                                                  epsilon2 = epsilon2,fixed_B =fixed_B, 
-                                                  print_t = print_t, time_points = time_points,
-                                                  print_int=print_int, stop=stop_criterion) 
-  
-  
-  result_list <- list(omega_list = tvHMFGraph_result$omega,iters=iters,
-              p = p, n = n, nu_list = nu_list, delta_list= delta_list, time_points = time_points,
-              print_int=print_int, stop_criterion=stop_criterion, epsilon1 = epsilon1, epsilon2 = epsilon2,
-              fixed_B  = fixed_B)
-  
-  
-  
-  permutation_results <- jointHWGraph_permutations(result_list,data_list, n_permutations= n_permutations,row_based=row_based, parallel_c = parallel_c, group_based_threshold= group_based_threshold)
-  
-  edge_selection <- jointHWGraph_edge_selection(permutation_results, result_list, FDR=FDR, target_FDR = target_FDR,group_based_threshold=group_based_threshold
-                                         , expected_number_of_connections = expected_number_of_connections)
-  
-  return(list(omega_list=tvHMFGraph_result$omega, adjacency_matrices = edge_selection$adjacency_matrices, tau = edge_selection$tau ))
+  return(list(omega_list=jointHWGraph_result$omega_list, adjacency_matrices = jointHWGraph_edge_selection_results$adjacency_matrices ))
 }
