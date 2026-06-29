@@ -1,8 +1,20 @@
-
-jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR = NULL,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, FDR_results = 0.05, memory_save=NULL){
+#' Edge selection using FDR control
+#'
+#' @param jointHWGraph_results 
+#' @param target_FDR 
+#' @param verbose If TRUE, prints the .
+#' @param plot_fdrtool If TRUE, plots the output of fdrtool function.
+#' @param verbose_fdrtool If TRUE, prints the output of fdrtool function.
+#' @param memory_save Option to save memory. Only recommended with large networks p > 10,000.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+jointHWGraph_edge_selection_FDR_control <- function(jointHWGraph_results, target_FDR = 0.05,verbose=T, plot_fdrtool=F,verbose_fdrtool=F, memory_save=NULL){
   
   p <- jointHWGraph_results$p
-  
   
   if(verbose){
     cat("Selecting edges for the networks using fdrtool \n")
@@ -26,18 +38,18 @@ jointHWGraph_edge_selection_fdrtool <- function(jointHWGraph_results, target_FDR
     partial_correlations <- cov2cor(jointHWGraph_results$omega[[i]])
     
     values <- partial_correlations[lower.tri(partial_correlations)]
-    z_values <- values
+    
     if(memory_save){
       gc()
     }
-    fdr_tul <- fdrtool::fdrtool(z_values, statistic = "correlation",plot=plot_fdrtool,verbose=verbose_fdrtool)
+    fdr_tul <- fdrtool::fdrtool(values, statistic = "correlation",plot=plot_fdrtool,verbose=verbose_fdrtool)
     if(memory_save){
       gc()
     }
     
     list11 <- fdr_tul$qval <= target_FDR
   
-    list <- rep(0,length(z_values))
+    list <- rep(0,length(values))
     list[list11] <- 1
     
     ad1 <- matrix(0,ncol =  p, nrow =  p)
