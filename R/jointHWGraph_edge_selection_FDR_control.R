@@ -1,11 +1,11 @@
-#' Edge selection using FDR control
+#' Edge selection for jointHWGraph using FDR control.
 #'
-#' @param jointHWGraph_results 
-#' @param target_FDR 
-#' @param verbose If TRUE, prints the .
-#' @param plot_fdrtool If TRUE, plots the output of fdrtool function.
-#' @param verbose_fdrtool If TRUE, prints the output of fdrtool function.
-#' @param memory_save Option to save memory. Only recommended with large networks p > 10,000.
+#' @param jointHWGraph_results The output object from the jointHWGraph_EM()-function.
+#' @param target_FDR If FDR_control = TRUE, this controls the target FDR value. On default, this is set to 0.05.
+#' @param verbose Controls if information during the edge selection is printed. On default, verbose = TRUE.
+#' @param plot_fdrtool If TRUE, plots the output of fdrtool function. On default, plot_fdrtool = FALSE.
+#' @param verbose_fdrtool If TRUE, prints the output of fdrtool function. On default, verbose_fdrtool = FALSE.
+#' @param memory_save If TRUE, gc()-function is run after every memory intensive operation. On default, this is set to FALSE. Only recommended to use with large networks p > 10,000.
 #'
 #' @return
 #' @export

@@ -1,4 +1,17 @@
-
+#' Edge selection for jointHWGraph using an optimal cut-off.
+#'
+#' @param jointHWGraph_results The output object from the jointHWGraph_EM()-function.
+#' @param expected_number_of_connections The number of expected connections in the network. This is used during the edge selection procedure if FDR_control = FALSE. On default, this is set to p, e.i. to be the same as the number of variables.
+#' @param verbose Controls if information during the edge selection is printed. On default, verbose = TRUE.
+#' @param plot_fdrtool If TRUE, plots the output of fdrtool function. On default, plot_fdrtool = FALSE.
+#' @param verbose_fdrtool If TRUE, prints the output of fdrtool function. On default, verbose_fdrtool = FALSE.
+#' @param memory_save If TRUE, gc()-function is run after every memory intensive operation. On default, this is set to FALSE. Only recommended to use with large networks p > 10,000.
+#' @param limit_FN If TRUE, then the approximated number of FALSE NEGATIVES in the network is limited to be at minimum 0. IF FALSE, FN can become a negative value. On default, limit_FN = TRUE. 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 jointHWGraph_optimal_edge_selection <- function(jointHWGraph_results, expected_number_of_connections= NULL,
                                                 verbose=T, plot_fdrtool=F,verbose_fdrtool=F, 
                                                 memory_save=NULL, limit_FN = T){

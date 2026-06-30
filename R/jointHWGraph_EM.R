@@ -1,19 +1,19 @@
 #' EM algorithm for jointHWGraph
 #'
-#' @param data_list a list of data matrices
-#' @param delta value for delta parameter. Default value is p*10
-#' @param nu_list vector of nu values. If a single value is given, then it is used for all groups. Default value is p*10
-#' @param n vector of sample sizes
-#' @param p number of variables 
-#' @param n_groups number of groups
-#' @param iters max iterations used for the gem algorithm
-#' @param B The target matrix. On default, an identity matrix is used 
-#' @param stop_criterion Stopping criterion. Default value is 10^-5
-#' @param scale_data If TRUE, then data is scale with scale-function
-#' @param print_t If TRUE, then
-#' @param only_mean 
-#' @param print_int 
-#' @param memory_save This option should only be used with extremely large networks p>10,000. If TRUE, then gc-function is used after all matrix operations to save memory
+#' @param data_list A list of data matrices n x p. 
+#' @param delta Hyperparameter value. On default value of 1 is used. Controls how much  shrinkage is used on off-diagonal elements. 
+#' @param nu_list A list, or single value for hyperparameter values. If single value is given, then that is used for all groups. On default nu = p*10 for all groups. Controls how much strongly groups are shrank to each other. 
+#' @param n Number of sample. List or a single value. On default, this is derived from the data_list.
+#' @param p Number of variables. On default, this is derived from the data_list.
+#' @param n_groups Number of groups. On default, this is derived from the data_list.
+#' @param iters Number of max iters for the EM algorithm.
+#' @param B Hyperparameter value. This should be a positive-definite matrix. On default, identity matrix is used.
+#' @param stop_criterion Convergence criterion. On default, 10^-5 is used.
+#' @param scale_data If TRUE, the data is scaled to have mean zero and variance 1. On default, this is TRUE.
+#' @param print_t If TRUE, then convergence information is printed during the EM algorithm
+#' @param print_int Defines how often convergence information is printed during the EM algorithm. On default 100 is used, e.i. information is printed every 100 iterations.
+#' @param memory_save If TRUE, gc()-function is run after every memory intensive operation. On default, this is set to FALSE. Only recommended to use with large networks p > 10,000.
+#' @param empirical_B If TRUE, an empirical B matrix is calculated with linearShrinkLWEst()-function. On default, this is set to FALSE.
 #'
 #' @return
 #' @export
