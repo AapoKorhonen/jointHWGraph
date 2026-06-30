@@ -72,13 +72,13 @@ colnames(ad4) <-  colnames(dat1)
 
 par(mfrow=c(2,2))
 qgraph::qgraph(ad1,labels = F,
-              title ="Luminal A",usePCH=T,vsize= 6)
+              title ="Luminal A",usePCH=T,vsize= 3)
 qgraph::qgraph(ad2,labels = F,
-               title ="Luminal B",usePCH=T,vsize= 6)
+               title ="Luminal B",usePCH=T,vsize= 3)
 qgraph::qgraph(ad3,labels = F,
-               title ="HER2-enriched",usePCH=T,vsize= 6)
+               title ="HER2-enriched",usePCH=T,vsize= 3)
 qgraph::qgraph(ad4,labels = F,
-               title ="Basal-like",usePCH=T,vsize= 6)
+               title ="Basal-like",usePCH=T,vsize= 3)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
